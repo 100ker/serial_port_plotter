@@ -481,9 +481,6 @@ void MainWindow::readData()
         if(!data.isEmpty()) {                                                             // If the byte array is not empty
             char *temp = data.data();                                                     // Get a '\0'-terminated char* to the data
 
-            if (!filterDisplayedData){
-                ui->textEdit_UartWindow->append(data);
-            }
             for(int i = 0; temp[i] != '\0'; i++) {                                        // Iterate over the char*
                 switch(STATE) {                                                           // Switch the current state of the message
                 case WAIT_START:                                                          // If waiting for start [$], examine each char
@@ -491,6 +488,23 @@ void MainWindow::readData()
                         STATE = IN_MESSAGE;
                         receivedData.clear();                                             // Clear temporary QString that holds the message
                         break;                                                            // Break out of the switch
+                    }
+                    else
+                    {
+                        if (!filterDisplayedData){
+                            if(temp[i] == '\r'){
+                                if (receivedData.length() > 5){
+                                    ui->textEdit_UartWindow->append(receivedData);
+                                    receivedData.clear();
+                                }
+                            }
+                            else if(temp[i] == '\n'){
+
+                            }
+                            else{
+                                receivedData.append(temp[i]);
+                            }
+                        }
                     }
                     break;
                 case IN_MESSAGE:                                                          // If state is IN_MESSAGE
@@ -501,13 +515,14 @@ void MainWindow::readData()
                             ui->textEdit_UartWindow->append(receivedData);
                         }
                         emit newData(incomingData);                                       // Emit signal for data received with the list
+                        receivedData.clear();
                         break;
                     }
                     else if (isdigit (temp[i]) || isspace (temp[i]) || temp[i] =='-' || temp[i] =='.')
-                      {
+                    {
                         /* If examined char is a digit, and not '$' or ';', append it to temporary string */
                         receivedData.append(temp[i]);
-                      }
+                    }
                     break;
                 default: break;
                 }
@@ -875,12 +890,12 @@ void MainWindow::on_pushButton_ShowallData_clicked()
     if(ui->pushButton_ShowallData->isChecked())
     {
         filterDisplayedData = false;
-        ui->pushButton_ShowallData->setText("Filter Incoming Data");
+        ui->pushButton_ShowallData->setText("Show Graph Data");
     }
     else
     {
         filterDisplayedData = true;
-        ui->pushButton_ShowallData->setText("Show All Incoming Data");
+        ui->pushButton_ShowallData->setText("Show Debug Data");
     }
 }
 

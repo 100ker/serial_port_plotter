@@ -583,7 +583,7 @@
            <item>
             <widget class="QPushButton" name="pushButton_ShowallData">
              <property name="text">
-              <string>Show All Incoming Data</string>
+              <string>Show Debug Data</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
